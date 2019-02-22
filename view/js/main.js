@@ -28,27 +28,32 @@
         }
         this.loading = true;
 
-        axios.post("http://localhost:8100/answer", {
-          paragraph: paragraph,
-          question: question
-        }).then((res) => {
-          this.loading = false;
-          console.log(res.data);
+        try {
+          axios.post("http://140.123.97.121:8080/answer", {
+            paragraph: paragraph,
+            question: question
+          }).then((res) => {
+            this.loading = false;
+            console.log(res.data);
 
-          /**
-           * show answer
-           */
-          this.answer = res.data.answer;
+            /**
+             * show answer
+             */
+            this.answer = res.data.answer;
 
-          /**
-           * play animation and TTS
-           */
+            /**
+             * play animation and TTS
+             */
 
-          this.speakAnswer();
+            this.speakAnswer();
 
-        }).catch((err) => {
-          console.log(err);
-        });
+          }).catch((err) => {
+            console.log(err);
+          });
+        } catch (e) {
+          console.log('catch', e);
+        }
+
 
       },
       playAnimation() {
