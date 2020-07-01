@@ -1,111 +1,137 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Reading QA</title>
+<html lang="en">
 
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
-      integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB"
-      crossorigin="anonymous"
-    />
-    <link rel="stylesheet" href="./css/style.css" />
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+  <meta
+    http-equiv="X-UA-Compatible"
+    content="ie=edge"
+  />
+  <title>Document</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+  />
+  <link
+    rel="stylesheet"
+    href="./css/style.css"
+  />
+</head>
 
-  <body>
-    <nav class="navbar navbar-dark bg-dark justify-content-center">
-      <span class="navbar-brand mb-0 h1">Reading QA</span>
+<body>
+  <header>
+    <nav>
+      <h1>
+        <a href="#">Reading QA</a>
+      </h1>
     </nav>
-    <div id="app">
-      <section class="loading" v-if="loading">
-        <span class="loading_text">Loading.....</span>
-        <div class="loader"></div>
-      </section>
-      <section v-else>
-        <div class="container container_margin">
-          <!-- avatar -->
-          <div id="avatar" class="text-center">
-            <img :src="imgSrc" alt="" />
-          </div>
-          <!-- end avatar -->
+  </header>
 
-          <div class="row">
-            <div class="col">
-              <!-- paragraph -->
-              <div id="paragraph">
-                <span class="help-block text-danger">character limit 1000</span>
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text">Paragraph</span>
-                  </div>
-                  <textarea
-                    class="form-control"
-                    v-model="input.paragraph"
-                    aria-label="With textarea"
-                    maxlength="1000"
-                    rows="10"
-                  ></textarea>
-                </div>
-              </div>
-              <!-- end paragraph -->
-            </div>
+  <div id="app">
+    <section
+      class="loading"
+      v-if="loading"
+    >
+      <div class="loading-text">loading.....</div>
+      <div class="loader"></div>
+    </section>
 
-            <div class="col">
-              <!-- question -->
-              <div id="question">
-                <span class="help-block text-danger">character limit 1000</span>
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text">Question</span>
-                  </div>
-                  <textarea
-                    v-model="input.question"
-                    class="form-control"
-                    aria-label="With textarea"
-                    rows="5"
-                    maxlength="1000"
-                  ></textarea>
-                </div>
-              </div>
-              <!-- end question -->
+    <section v-else>
+      <img
+        class="avatar"
+        :src="imgSrc"
+        alt="avatar"
+      />
 
-              <!-- answer -->
-              <div id="answer">
-                <div class="answer border rounded">
-                  <div class="answer_title_block">
-                    <span class="answer_title_text">Answer</span>
-                    <div class="answer_text">{{ answer }}</div>
-                  </div>
-                </div>
-              </div>
-              <!-- end answer -->
-            </div>
-          </div>
+      <form class="input-form">
+        <div class="paragraph">
+          <select
+            name="select-form"
+            class="select-form"
+            v-model="input.paragraph"
+          >
+            <option value="">請選擇新聞標題</option>
+            <option
+              value=""
+              v-for="option in news"
+              v-bind:value="option.content"
+            >
+              {{option.title}}
+            </option>
+          </select>
 
-          <!-- submit button -->
-          <div id="submit_button">
-            <div class="col-md-12 text-center mt-5">
+          <div class="paragraph-text">
+            <div class="input-header">
+              <div class="title">Paragraph</div>
               <button
-                @click="submitQuery"
+                class="btn speaker-btn"
                 type="button"
-                class="btn btn-dark middle"
+                :class="{active:isSpeaking}"
+                @click="speakParagraph"
               >
-                Submit
+                <i class="fas fa-volume-up"></i>
               </button>
             </div>
-          </div>
-          <!-- end submit button -->
-        </div>
-      </section>
-    </div>
-  </body>
-  <!-- TTS Javascript -->
 
-  <script src="http://code.responsivevoice.org/responsivevoice.js"></script>
+            <textarea
+              defaultValue="abc"
+              class="input paragraph-input"
+              maxlength="1000"
+              rows="10"
+              readonly="true"
+            >
+{{input.paragraph}}</textarea>
+          </div>
+        </div>
+
+        <div class="question-answer clearfix">
+          <div class="question-area">
+            <div class="input-header">
+              <div class="title">Question</div>
+              <button
+                type="button"
+                class="btn listener-btn"
+                :class="{active:isListening}"
+                @click="listenQuestion"
+              >
+                <i class="fas fa-microphone"></i>
+              </button>
+            </div>
+            <textarea
+              class="input question-input"
+              v-model="input.question"
+              type="text"
+              maxlength="1000"
+              minlength="10"
+            ></textarea>
+          </div>
+
+          <div class="answer-area">
+            <div class="title">Answer</div>
+            <output class="input answer">
+              {{ answer }}
+            </output>
+          </div>
+
+          <button
+            type="button"
+            class="btn submit-btn"
+            @click="submitQuery"
+          >
+            Submit
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
   <script src="./js/main.js"></script>
+</body>
+
 </html>
